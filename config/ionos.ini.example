@@ -1,0 +1,6 @@
+# IONOS Developer DNS API credentials for certbot-dns-ionos.
+# Install:  /etc/letsencrypt/.secrets/ionos.ini   (root-only, chmod 600)
+# Get prefix + secret at https://developer.hosting.ionos.es/keys
+dns_ionos_prefix = YOUR_PREFIX
+dns_ionos_secret = YOUR_SECRET
+dns_ionos_endpoint = https://api.hosting.ionos.com
