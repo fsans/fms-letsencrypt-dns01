@@ -398,6 +398,8 @@ that gap: a daily check of the cert on ports 443 **and** 5003 (each is
 a separate consumer), days-to-expiry, a strict-TLS fetch, and the
 service ports, with an email report via curl/SMTPS (no local MTA).
 
+Run from the repo root (the `scripts/` and `config/` paths are relative):
+
 ```bash
 sudo cp scripts/check-cert-and-report.sh /usr/local/bin/fms-cert-check.sh
 sudo chmod +x /usr/local/bin/fms-cert-check.sh
