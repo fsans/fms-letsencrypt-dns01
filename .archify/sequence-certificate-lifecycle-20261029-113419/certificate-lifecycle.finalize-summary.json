@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "sequence",
+  "quality": "showcase",
+  "specification": {
+    "path": "/Volumes/DATA00/HOME/Documents/WORK/GITHUB/fms-letsencrypt-dns01/.archify/sequence-certificate-lifecycle-20261029-113419/candidate.json",
+    "sha256": "aacb51a76d1e5cd021b3ba7da74294583da4d194642fbf0e3450c0c6e02dd14f",
+    "bytes": 8762
+  },
+  "artifact": {
+    "path": "/Volumes/DATA00/HOME/Documents/WORK/GITHUB/fms-letsencrypt-dns01/.archify/sequence-certificate-lifecycle-20261029-113419/certificate-lifecycle.html",
+    "sha256": "b54757bb032fd607e27c5e8a4294a3dc3055c8c5a0aa39ac85bdf62859dd53bf",
+    "bytes": 832153
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "/Volumes/DATA00/HOME/Documents/WORK/GITHUB/fms-letsencrypt-dns01/.archify/sequence-certificate-lifecycle-20261029-113419/certificate-lifecycle.finalize.json",
+    "summaryReceipt": "/Volumes/DATA00/HOME/Documents/WORK/GITHUB/fms-letsencrypt-dns01/.archify/sequence-certificate-lifecycle-20261029-113419/certificate-lifecycle.finalize-summary.json",
+    "browserCheckReceipt": "/Volumes/DATA00/HOME/Documents/WORK/GITHUB/fms-letsencrypt-dns01/.archify/sequence-certificate-lifecycle-20261029-113419/certificate-lifecycle.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.2.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-10-29T10:39:24.863Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 8146,
+  "browserCheck": {
+    "requested": true,
+    "ran": true
+  }
+}

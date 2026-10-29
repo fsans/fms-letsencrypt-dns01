@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "5c3b7f67-f735-49c6-8fa0-fe00c18f4a89",
+  "status": "current",
+  "command": "deliver",
+  "type": "sequence",
+  "input": "/Volumes/DATA00/HOME/Documents/WORK/GITHUB/fms-letsencrypt-dns01/.archify/sequence-certificate-lifecycle-20261029-113419/candidate.json",
+  "output": "/Volumes/DATA00/HOME/Documents/WORK/GITHUB/fms-letsencrypt-dns01/.archify/sequence-certificate-lifecycle-20261029-113419/certificate-lifecycle.html",
+  "specification": {
+    "sha256": "aacb51a76d1e5cd021b3ba7da74294583da4d194642fbf0e3450c0c6e02dd14f",
+    "bytes": 8762
+  },
+  "artifact": {
+    "sha256": "b54757bb032fd607e27c5e8a4294a3dc3055c8c5a0aa39ac85bdf62859dd53bf",
+    "bytes": 832153
+  }
+}
