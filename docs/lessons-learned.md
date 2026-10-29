@@ -85,5 +85,7 @@ entry. (LE cannot issue certs for private-IP SANs anyway.)
 - The creds'd deploy hook (this repo).
 - A hook test right after setup:
   `sudo /etc/letsencrypt/renewal-hooks/deploy/install-fms-cert.sh`
-- Cert monitoring — even a cron'd `verify-cert.sh` that warns when
-  `notAfter` is < 14 days out on either port 443 or 5003.
+- Cert monitoring — implemented here as
+  `scripts/check-cert-and-report.sh`: a daily launchd job that checks
+  `notAfter` on ports 443 **and** 5003 and emails a status report
+  (WARN when < 30 days remain, FAIL on expiry/mismatch).

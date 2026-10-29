@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.fms.certcheck</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/local/bin/fms-cert-check.sh</string>
+    </array>
+    <!-- 04:00 — runs after the 03:30 certbot renewal so post-renewal
+         state (cert imported + served) is what gets checked. -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>4</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+    <key>StandardOutPath</key>
+    <string>/var/log/fms-cert-check-launchd.log</string>
+    <key>StandardErrorPath</key>
+    <string>/var/log/fms-cert-check-launchd.log</string>
+</dict>
+</plist>

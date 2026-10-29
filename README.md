@@ -35,9 +35,12 @@ plugin — swap the credentials/authenticator flags accordingly.
 | `scripts/install-fms-cert.sh` | The certbot **deploy hook**: imports the renewed cert into FMS and reloads services |
 | `scripts/manual-import.sh` | Interactive version of the hook (for first-time install or recovery) |
 | `scripts/verify-cert.sh` | Checks the cert on ports 443 + 5003, expiry, and strict-TLS reachability |
+| `scripts/check-cert-and-report.sh` | Scheduled daily check — emails an admin a status report via curl/SMTPS |
 | `config/com.letsencrypt.renew.plist` | launchd daemon that runs `certbot renew` daily at 03:30 |
+| `config/com.fms.certcheck.plist` | launchd daemon that runs the cert check daily at 04:00 |
 | `config/ionos.ini.example` | IONOS API credentials template for the DNS plugin |
 | `config/fmsadmin.env.example` | FMS Admin Console credentials template for the deploy hook |
+| `config/fms-cert-check.env.example` | Domain + SMTP settings for the scheduled report |
 
 ## Quick start
 

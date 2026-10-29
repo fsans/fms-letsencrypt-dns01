@@ -390,6 +390,35 @@ sudo /opt/certbot-venv/bin/certbot renew --dry-run
 Should create TXT → verify → delete TXT → report success. On failure,
 check `/var/log/letsencrypt/letsencrypt.log`.
 
+## Step 10 — Scheduled verification + email reports
+
+Renewal failures are silent until the cert expires — see
+`docs/lessons-learned.md`. `scripts/check-cert-and-report.sh` closes
+that gap: a daily check of the cert on ports 443 **and** 5003 (each is
+a separate consumer), days-to-expiry, a strict-TLS fetch, and the
+service ports, with an email report via curl/SMTPS (no local MTA).
+
+```bash
+sudo cp scripts/check-cert-and-report.sh /usr/local/bin/fms-cert-check.sh
+sudo chmod +x /usr/local/bin/fms-cert-check.sh
+sudo cp config/fms-cert-check.env.example /etc/fms-cert-check.env
+sudo chmod 600 /etc/fms-cert-check.env      # then edit DOMAIN + SMTP vars
+sudo cp config/com.fms.certcheck.plist /Library/LaunchDaemons/
+sudo launchctl load -w /Library/LaunchDaemons/com.fms.certcheck.plist
+```
+
+Test it:
+
+```bash
+sudo /usr/local/bin/fms-cert-check.sh --dry-run       # print report, no email
+sudo /usr/local/bin/fms-cert-check.sh --force-email   # send now regardless
+```
+
+The daemon runs at 04:00, right after the 03:30 renewal window, so a
+failed renewal+import is reported the same morning. By default it
+emails on WARN/FAIL plus a weekly OK heartbeat (Monday) — set
+`ALWAYS_SEND=1` for a daily report.
+
 ## Troubleshooting
 
 ### `Certificate not imported, alias <...> already exists`
