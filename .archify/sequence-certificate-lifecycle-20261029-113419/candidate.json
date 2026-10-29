@@ -1,0 +1,259 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "FMS Let's Encrypt DNS-01 Certificate Lifecycle",
+    "locale": "en",
+    "output": ".archify/sequence-certificate-lifecycle-20261029-113419/certificate-lifecycle.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/fsans/fms-letsencrypt-dns01.git",
+      "revision": "5ff77235a536ded84ba94bd16fbf946be61d6abd"
+    }
+  },
+  "participants": [
+    {
+      "id": "launchd",
+      "type": "backend",
+      "label": "launchd",
+      "sublabel": "03:30 / 04:00 jobs",
+      "sources": [
+        { "path": "config/com.letsencrypt.renew.plist", "line": 5, "end_line": 20, "label": "03:30 renew daemon" },
+        { "path": "config/com.fms.certcheck.plist", "line": 5, "end_line": 19, "label": "04:00 check daemon" }
+      ]
+    },
+    {
+      "id": "certbot",
+      "type": "security",
+      "label": "Certbot + IONOS",
+      "sublabel": "/opt/certbot-venv",
+      "sources": [
+        { "path": "scripts/install-certbot-venv.sh", "line": 7, "end_line": 15, "label": "venv + dns-ionos" },
+        { "path": "docs/guide.md", "line": 205, "end_line": 218, "label": "certonly DNS-01" },
+        { "path": "config/com.letsencrypt.renew.plist", "line": 7, "end_line": 13, "label": "certbot renew" }
+      ]
+    },
+    {
+      "id": "ionos",
+      "type": "cloud",
+      "label": "IONOS DNS API",
+      "sublabel": "_acme-challenge TXT",
+      "sources": [
+        { "path": "docs/guide.md", "line": 32, "end_line": 36, "label": "DNS-01 TXT lifecycle" },
+        { "path": "docs/guide.md", "line": 140, "end_line": 144, "label": "ionos.ini API config" }
+      ]
+    },
+    {
+      "id": "letsencrypt",
+      "type": "external",
+      "label": "Let's Encrypt",
+      "sublabel": "ACME CA",
+      "sources": [
+        { "path": "docs/guide.md", "line": 48, "end_line": 50, "label": "TXT validation" },
+        { "path": "docs/guide.md", "line": 215, "end_line": 218, "label": "90-day cert issuance" }
+      ]
+    },
+    {
+      "id": "deploy_hook",
+      "type": "backend",
+      "label": "Deploy Hook",
+      "sublabel": "install-fms-cert.sh",
+      "sources": [
+        { "path": "scripts/install-fms-cert.sh", "line": 13, "end_line": 34, "label": "stage + import + reload" },
+        { "path": "scripts/manual-import.sh", "line": 24, "end_line": 43, "label": "interactive import" }
+      ]
+    },
+    {
+      "id": "fms",
+      "type": "database",
+      "label": "FMS Host",
+      "sublabel": "CStore, 443 & 5003",
+      "sources": [
+        { "path": "scripts/install-fms-cert.sh", "line": 19, "end_line": 34, "label": "CStore + service reloads" },
+        { "path": "docs/guide.md", "line": 266, "end_line": 278, "label": "httpd.graceful & fms" }
+      ]
+    },
+    {
+      "id": "cert_check",
+      "type": "backend",
+      "label": "Cert Check",
+      "sublabel": "fms-cert-check.sh",
+      "sources": [
+        { "path": "scripts/check-cert-and-report.sh", "line": 61, "end_line": 105, "label": "TLS & port checks" },
+        { "path": "scripts/check-cert-and-report.sh", "line": 112, "end_line": 137, "label": "SMTPS report policy" }
+      ]
+    },
+    {
+      "id": "smtp",
+      "type": "external",
+      "label": "SMTPS / Admin",
+      "sublabel": "curl SMTPS alert",
+      "sources": [
+        { "path": "scripts/check-cert-and-report.sh", "line": 20, "end_line": 26, "label": "SMTP & heartbeat config" },
+        { "path": "scripts/check-cert-and-report.sh", "line": 124, "end_line": 136, "label": "curl SMTPS upload" }
+      ]
+    }
+  ],
+  "segments": [
+    { "from": 150, "to": 395, "label": "1. Issuance & Daily Renewal (03:30 DNS-01)" },
+    { "from": 405, "to": 605, "label": "2. Deploy Hook: Stage, Import & Reload FMS" },
+    { "from": 615, "to": 775, "label": "3. Daily Verification & Alerting (04:00)" }
+  ],
+  "messages": [
+    {
+      "id": "trigger-renew",
+      "from": "launchd",
+      "to": "certbot",
+      "y": 165,
+      "label": "certbot renew --quiet",
+      "variant": "emphasis",
+      "note": "Daily 03:30 job (or initial certonly); renews within 30 days of expiry"
+    },
+    {
+      "id": "request-order",
+      "from": "certbot",
+      "to": "letsencrypt",
+      "y": 215,
+      "label": "request ACME DNS-01 challenge",
+      "variant": "security"
+    },
+    {
+      "id": "create-txt",
+      "from": "certbot",
+      "to": "ionos",
+      "y": 245,
+      "label": "POST _acme-challenge TXT",
+      "variant": "security",
+      "note": "Uses /etc/letsencrypt/.secrets/ionos.ini; waits 60s propagation"
+    },
+    {
+      "id": "verify-txt",
+      "from": "letsencrypt",
+      "to": "ionos",
+      "y": 325,
+      "label": "query _acme-challenge TXT",
+      "variant": "security"
+    },
+    {
+      "id": "issue-cert",
+      "from": "letsencrypt",
+      "to": "certbot",
+      "y": 355,
+      "label": "fullchain.pem + privkey.pem + chain.pem",
+      "variant": "return"
+    },
+    {
+      "id": "delete-txt",
+      "from": "certbot",
+      "to": "ionos",
+      "y": 383,
+      "label": "DELETE _acme-challenge TXT",
+      "variant": "dashed"
+    },
+    {
+      "id": "run-deploy-hook",
+      "from": "certbot",
+      "to": "deploy_hook",
+      "y": 420,
+      "label": "exec renewal-hooks/deploy",
+      "variant": "emphasis",
+      "note": "Passes RENEWED_LINEAGE; sources root-only fmsadmin.env"
+    },
+    {
+      "id": "stage-cstore",
+      "from": "deploy_hook",
+      "to": "fms",
+      "y": 470,
+      "label": "stage PEMs (fmserver:fmsadmin 640)",
+      "variant": "security"
+    },
+    {
+      "id": "fmsadmin-import",
+      "from": "deploy_hook",
+      "to": "fms",
+      "y": 500,
+      "label": "fmsadmin certificate delete & import -y",
+      "variant": "emphasis",
+      "note": "Writes /Library/FileMaker Server/CStore/serverCustom.pem"
+    },
+    {
+      "id": "kickstart-services",
+      "from": "deploy_hook",
+      "to": "fms",
+      "y": 585,
+      "label": "kickstart -k httpd.graceful & com.filemaker.fms",
+      "variant": "emphasis"
+    },
+    {
+      "id": "trigger-check",
+      "from": "launchd",
+      "to": "cert_check",
+      "y": 630,
+      "label": "run fms-cert-check.sh (04:00)",
+      "variant": "default"
+    },
+    {
+      "id": "probe-fms",
+      "from": "cert_check",
+      "to": "fms",
+      "y": 660,
+      "label": "openssl s_client 443/5003, curl https, nc 16001",
+      "variant": "security"
+    },
+    {
+      "id": "fms-health",
+      "from": "fms",
+      "to": "cert_check",
+      "y": 690,
+      "label": "CN match, days >= 30, TLS & ports status",
+      "variant": "return"
+    },
+    {
+      "id": "email-report",
+      "from": "cert_check",
+      "to": "smtp",
+      "y": 720,
+      "label": "curl --ssl-reqd SMTPS status report",
+      "variant": "dashed",
+      "note": "Always sends on WARN/FAIL; weekly OK heartbeat on Monday"
+    }
+  ],
+  "activations": [
+    { "participant": "certbot", "from": 160, "to": 428, "type": "security" },
+    { "participant": "ionos", "from": 240, "to": 388, "type": "cloud" },
+    { "participant": "letsencrypt", "from": 210, "to": 360, "type": "external" },
+    { "participant": "deploy_hook", "from": 415, "to": 595, "type": "backend" },
+    { "participant": "fms", "from": 465, "to": 600, "type": "database" },
+    { "participant": "cert_check", "from": 625, "to": 755, "type": "backend" },
+    { "participant": "fms", "from": 655, "to": 695, "type": "database" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Why DNS-01 Instead of HTTP-01",
+      "items": [
+        "FMS sits on a private LAN IP with ports 80/443 unavailable from the public internet",
+        "Let's Encrypt validates domain control solely via the _acme-challenge TXT record in IONOS DNS",
+        "Avoids FMS Admin Console's built-in HTTP-01 request, which times out and burns rate limits"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Staging & Dual-Service Reload",
+      "items": [
+        "/etc/letsencrypt/live is root-only (0700), so PEMs are staged to CStore/letsencrypt-staging for fmserver:fmsadmin",
+        "Existing custom cert must be deleted before importing fullchain.pem, privkey.pem, and chain.pem",
+        "Apache (443) reloads gracefully via httpd.graceful; DB server (5003) restarts atomically via kickstart -k com.filemaker.fms"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Post-Renewal Verification (04:00)",
+      "items": [
+        "Runs 30 minutes after the 03:30 renewal window to catch silent deploy-hook or TTY credential failures",
+        "Verifies certificate CN and expiry (< 30 days warn) independently on port 443 (Apache) and port 5003 (DB server)",
+        "Tests strict OS trust store TLS via curl (no -k) and emails alerts via SMTPS without a local MTA"
+      ]
+    }
+  ]
+}
